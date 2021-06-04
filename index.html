@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script>
+    const mhFromRange = 0.01;
+    const mhToRange = 0.01;
+    const mvFromRange = 0.01;
+    const mvToRange = 0.01;
+    const pdopFromRange = 0.01;
+    const pdopToRange = 0.01;
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNG</title>
+</head>
+
+<body>
+    <h1>
+        Decimal Number Generator
+    </h1>
+    <div>
+        <form id="form">
+            <div id="checkboxContent">
+                <div>
+                    <input type="checkbox" id="mh" name="drone" checked>
+                    <label for="mh">MH</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="mv" name="drone" checked>
+                    <label for="mv">MV</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="pdop" name="drone" checked>
+                    <label for="pdop">PDOP</label>
+                </div>
+            </div>
+            <div id="itemsDiv">
+                <label for="items">Number of sets to generate: </label>
+                <input type="number" id="items" value="0">
+            </div>
+
+            <div id="buttonsDiv">
+                <input type="submit" id="submit" onclick="generateValues(event)" value="Generate">
+                <input type="button" id="copy" onclick="copyToClipboard()" value="Copy to Clipboard">
+                <a id="downloadAnchor" href="#"><input type="button" value="Download txt file"></a>
+            </div>
+        </form>
+    </div>
+    <div id="tableDiv">
+        <textarea id="table" rows="50" cols="70" disabled></textarea>
+    </div>
+</body>
+
+<script>
+    
+    const textArea = document.getElementById("table");
+    const mh = document.getElementById("mh");
+    const mv = document.getElementById("mv");
+    const pdop = document.getElementById("pdop");
+    const items = document.getElementById("items");
+    const copyBtn = document.getElementById("copy");
+    const submitBtn = document.getElementById("submit");
+    const downloadAnchor = document.getElementById("downloadAnchor");
+
+    function generateValues(event) {
+        event.preventDefault();
+
+        textArea.value = "";
+        generateRandom();
+
+        console.log("sadasda");
+        downloadAnchor.setAttribute('href', "data:text/plain;charset=utf-8," + encodeURIComponent(textArea.value));
+        downloadAnchor.setAttribute('download', genRand(10000000,100000000000000, 0));
+        console.log("dsada");
+    }
+
+    function generateMH() {
+        return genRand(0.01, 0.05, 3);
+    }
+
+    function generateMV() {
+        return genRand(0.01, 0.05, 3);
+    }
+
+    function generatePDOP() {
+        return genRand(1.3, 2.5, 2);
+    }
+
+    function generateRandom() {
+        const size = items.value;
+        if (size <= 0) {
+            items.value = 0;
+            textArea.value = "Please increase number of sets to generate";
+            submitBtn.classList.add("fail")
+            setTimeout(() => { submitBtn.classList = "" }, 500)
+        } else {
+            for (i = 0; i < items.value; i++) {
+                if (mh.checked)
+                    textArea.value += generateMH() + "\t";
+                if (mv.checked)
+                    textArea.value += generateMV() + "\t";
+                if (pdop.checked)
+                    textArea.value += generatePDOP();
+                textArea.value += '\n'
+            }
+            submitBtn.classList.add("success")
+            setTimeout(() => { submitBtn.classList = "" }, 500)
+        }
+    }
+
+    function genRand(min, max, decimalPlaces) {
+        var rand = Math.random() * (max - min) + min;
+        var power = Math.pow(10, decimalPlaces);
+        return Math.floor(rand * power) / power;
+    }
+
+    function copyToClipboard() {
+        if (!navigator.clipboard) {
+            copyBtn.classList.add("fail")
+            return;
+        }
+        navigator.clipboard.writeText(textArea.value).then(function () {
+            copyBtn.classList.add("success")
+            setTimeout(() => { copyBtn.classList = "" }, 500)
+        }, function (err) {
+            copyBtn.classList.add("fail")
+            setTimeout(() => { copyBtn.classList = "" }, 500)
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
+
+</script>
+<style>
+    body {
+        box-sizing: border-box;
+    }
+
+    h1 {
+        width: 100%;
+        margin: auto;
+        text-align: center;
+        padding: 20px;
+    }
+
+    #form {
+        margin: auto;
+        display: flex;
+        width: 30%;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    #checkboxContent,
+    #buttonsDiv {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #itemsDiv {
+        display: flex;
+        justify-content: center;
+    }
+
+    #items {
+        margin-left: 10px;
+        text-align: right;
+        width: 70px;
+    }
+
+    #tableDiv {
+        width: 100%;
+        text-align: center;
+    }
+
+    #table {
+        text-align: center;
+    }
+
+    .success {
+        background-color: rgb(20, 201, 20);
+    }
+
+    .fail {
+        background-color: red;
+    }
+</style>
+
+</html>
